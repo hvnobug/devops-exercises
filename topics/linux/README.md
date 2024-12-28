@@ -169,6 +169,9 @@ They take in input (<) and output for a given file (>) using stdin and stdout.
   - cut: a tool for cutting out selected portions of each line of a file:
     - syntax: `cut OPTION [FILE]`
       - cutting first two bytes from a word in a file: `cut -b 1-2 file.md`, output: `wo`
+  - awk: a programming language that is mainly used for text processing and data extraction. It can be used to manipulate and modify text in a file:
+    - syntax: awk [OPTIONS] [FILTER] [FILE]
+extracting a specific field from a CSV file: awk -F ',' '{print $1}' file.csv, output: first field of each line in the file
 </b></details>
 
 <details>
@@ -234,7 +237,8 @@ find . -iname "*.yaml" -exec sed -i "s/1/2/g" {} \;
 <details>
 <summary>How to check which commands you executed in the past?</summary><br><b>
 
-history command or .bash_history file
+history command or .bash_history file 
+  * also can use up arrow key to access or to show the recent commands you type
 </b></details>
 
 <details>
@@ -277,24 +281,37 @@ Alternatively if you are using a distro with systemd it's recommended to use sys
 
 <details>
 <summary>Explain Linux I/O redirection</summary><br><b>
+  In Linux, IO redirection is a way of changing the default input/output behavior of a command or program. It allows you to redirect input and output from/to different sources/destinations, such as files, devices, and other commands.
+
+Here are some common examples of IO redirection:
+ * Redirecting Standard Output (stdout):
+  <code>ls > filelist.txt</code>
+* Redirecting Standard Error (stderr):
+  <code>ls /some/nonexistent/directory 2> error.txt</code>
+* Appending to a file:
+  <code>echo "hello" >> myfile.txt</code>
+* Redirecting Input (stdin):
+  <code>sort < unsorted.txt</code>
+* Using Pipes: Pipes ("|"):
+  <code>ls | grep "\.txt$"</code>         
 </b></details>
 
 <details>
 <summary>Demonstrate Linux output redirection</summary><br><b>
 
-ls > ls_output.txt
+<code>ls > ls_output.txt</code>
 </b></details>
 
 <details>
 <summary>Demonstrate Linux stderr output redirection</summary><br><b>
 
-yippiekaiyay 2> ls_output.txt
+<code>yippiekaiyay 2> ls_output.txt</code>
 </b></details>
 
 <details>
 <summary>Demonstrate Linux stderr to stdout redirection</summary><br><b>
 
-yippiekaiyay &> file
+<code>yippiekaiyay &> file</code>
 </b></details>
 
 <details>
@@ -343,6 +360,7 @@ It contains useful information about the processes that are currently running, i
 
 <details>
 <summary>What makes /proc different from other filesystems?</summary><br><b>
+/proc is a special virtual filesystem in Unix-like operating systems, including Linux, that provides information about processes and system resources.
 </b></details>
 
 <details>
@@ -359,6 +377,7 @@ The command passed to the boot loader to run the kernel
 
 <details>
 <summary>In which path can you find the system devices (e.g. block storage)?</summary><br><b>
+  /dev
 </b></details>
 
 <a name="questions-linux-permissions"></a>
@@ -415,6 +434,10 @@ Its a bit that only allows the owner or the root user to delete or modify the fi
 
 <details>
 <summary>What is sudo? How do you set it up?</summary><br><b>
+sudo is a command-line utility in Unix-like operating systems that allows users to run programs with the privileges of another user, usually the superuser (root). It stands for "superuser do.
+
+The sudo program is installed by default in almost all Linux distributions. If you need to install sudo in Debian/Ubuntu, use the command apt-get install sudo
+
 </b></details>
 
 <details>
@@ -604,6 +627,8 @@ The kernel is part of the operating system and is responsible for tasks like:
 
 <details>
 <summary>What is a Linux kernel module and how do you load a new module?</summary><br><b>
+
+A Linux kernel module is a piece of code that can be dynamically loaded into the kernel to extend its functionality. These modules are typically used to add support for hardware devices, filesystems, or system calls. The kernel itself is monolithic, but with modules, its capabilities can be extended without having to reboot the system or recompile the entire kernel.
 </b></details>
 
 <details>
@@ -1177,7 +1202,7 @@ You can also try closing/terminating the parent process. This will make the zomb
   * Zombie Processes
 </summary><br><b>
 
-If you mention at any point ps command with arugments, be familiar with what these arguments does exactly.
+If you mention at any point ps command with arguments, be familiar with what these arguments does exactly.
 </b></details>
 
 <details>
@@ -1631,7 +1656,7 @@ There are 2 configuration files, which stores users information
 <details>
 <summary>Which file stores users passwords? Is it visible for everyone?</summary><br>
 
-`/etc/shadow` file holds the passwords of the users in encryted format. NO, it is only visble to the `root` user
+`/etc/shadow` file holds the passwords of the users in encrypted format. NO, it is only visible to the `root` user
 </details>
 
 <details>
@@ -1962,7 +1987,7 @@ Given the name of an executable and some arguments, it loads the code and static
 <summary>True or False? A successful call to exec() never returns</summary><br><b>
 
 True<br>
-Since a succesful exec replace the current process, it can't return anything to the process that made the call.
+Since a successful exec replace the current process, it can't return anything to the process that made the call.
 </b></details>
 
 <details>
@@ -2120,6 +2145,20 @@ This is a good article about the topic: https://ops.tips/blog/how-linux-creates-
 
 <details>
 <summary>You executed a script and while still running, it got accidentally removed. Is it possible to restore the script while it's still running?</summary><br><b>
+It is possible to restore a script while it's still running if it has been accidentally removed. The running script process still has the code in memory. You can use the /proc filesystem to retrieve the content of the running script.
+1.Find the Process ID by running 
+```
+ps aux | grep yourscriptname.sh
+```
+Replace yourscriptname.sh with your script name.
+2.Once you have the PID, you can access the script's memory through the /proc filesystem. The script will be available at /proc/<PID>/fd/, where <PID> is the process ID of the running script. Typically, the script's file descriptor is 0 or 1.
+
+You can copy the script content to a new file using the cp command:
+```
+cp /proc/<PID>/fd/0 /path_to_restore_your_file/yourscriptname.sh
+```
+Replace <PID> with the actual PID of the  script and /path_to_restore_your_file/yourscriptname.sh with the path where you want to restore the script.
+
 </b></details>
 
 <a name="questions-linux-memory"></a>
@@ -2258,6 +2297,14 @@ It's used in commands to mark the end of commands options. One common example is
 
 <details>
 <summary>What is User-mode Linux?</summary><br><b>
+In Linux, user mode is a restricted operating mode in which a user's application or process runs. User mode is a non-privileged mode that prevents user-level processes from accessing sensitive system resources directly.
+
+In user mode, an application can only access hardware resources indirectly, by calling system services or functions provided by the operating system. This ensures that the system's security and stability are maintained by preventing user processes from interfering with or damaging system resources.
+
+Additionally, user mode also provides memory protection to prevent applications from accessing unauthorized memory locations. This is done by assigning each process its own virtual memory space, which is isolated from other processes.
+
+In contrast to user mode, kernel mode is a privileged operating mode in which the operating system's kernel has full access to system resources, and can perform low-level operations, such as accessing hardware devices and managing system resources directly.
+
 </b></details>
 
 <details>
